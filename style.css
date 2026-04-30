@@ -928,3 +928,158 @@ select:focus {
     border-radius: 16px;
     margin-bottom: 25px;
 }
+
+.correct-answers-view h4 { margin-bottom: 10px; color: var(--primary-light); }
+
+.correct-answers-view ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.correct-answers-view li { font-size: 0.9rem; color: var(--text-main); }
+
+/* Stats View */
+.session-stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: var(--glass);
+    border-radius: 10px;
+}
+
+/* ══════════════════════════════════════
+   MOBILE & RESPONSIVE TWEAKS
+   ══════════════════════════════════════ */
+
+/* Rotate Overlay */
+.rotate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg-deep);
+    z-index: 99999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    color: var(--primary);
+}
+
+.rotate-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    animation: rotatePhone 2s infinite ease-in-out;
+}
+
+@keyframes rotatePhone {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(90deg); }
+    100% { transform: rotate(90deg); }
+}
+
+.rotate-overlay h2 { font-family: var(--font-title); font-size: 2.5rem; margin-bottom: 10px; }
+.rotate-overlay p { color: var(--text-muted); font-size: 1.1rem; }
+
+/* Force Landscape for mobile/tablet portrait */
+@media screen and (orientation: portrait) and (max-width: 900px) {
+    .rotate-overlay { display: flex; }
+    .top-nav, .setup-screen, .app { display: none !important; }
+}
+
+/* Landscape Optimizations (Fit everything in one screen) */
+@media screen and (max-height: 550px) {
+    .app { 
+        padding: 10px; 
+        gap: 5px; 
+        min-height: 100vh; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center;
+    }
+    
+    .top-nav, .header { display: none !important; }
+    
+    .top-scoreboard { padding: 5px 15px; margin-bottom: 5px; border-radius: 12px; }
+    .top-scoreboard .team-score { font-size: 1.1rem; }
+    
+    .question-panel { padding: 8px 15px; border-radius: 12px; flex: 0 1 auto; }
+    .question-text { font-size: 1.1rem; line-height: 1.2; margin: 0; }
+    
+    .game-area { gap: 8px; flex: 1; align-items: stretch; }
+    .player-card { padding: 6px 10px; border-radius: 12px; }
+    .player-score { font-size: 1.6rem; }
+    
+    .timer-column { width: 110px; }
+    .timer-ring { width: 80px; height: 80px; }
+    .timer-seconds { font-size: 1.8rem; }
+    
+    /* Result Screen Landscape Optimization */
+    .result-overlay { padding: 10px; }
+    .result-card { 
+        padding: 15px 25px; 
+        max-width: 95%; 
+        display: flex; 
+        flex-direction: row; 
+        align-items: center; 
+        text-align: right; 
+        gap: 20px;
+        border-radius: 20px;
+    }
+    .result-info { flex: 1; display: flex; flex-direction: column; align-items: center; }
+    .result-icon { font-size: 3rem; margin-bottom: 5px; }
+    .result-title { font-size: 1.5rem; margin-bottom: 5px; }
+    .result-desc { font-size: 0.85rem; margin-bottom: 10px; }
+    
+    .correct-answers-view { 
+        margin: 0; 
+        padding: 10px; 
+        flex: 2; 
+        max-height: 180px; 
+        overflow-y: auto; 
+    }
+    .correct-answers-view h4 { font-size: 0.9rem; }
+    .correct-answers-view ul { grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+    .correct-answers-view li { font-size: 0.75rem; }
+    
+    .session-stats { margin-bottom: 10px; gap: 5px; }
+    .stat-box { padding: 5px 10px; font-size: 0.8rem; }
+}
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════ */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes chipPop { from { transform: scale(0); } to { transform: scale(1); } }
+
+@keyframes rotateShake {
+    0%, 100% { transform: rotate(-90deg); }
+    25% { transform: rotate(-92deg); }
+    75% { transform: rotate(-88deg); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.pulse { animation: pulse 2s infinite; }
+
+.shake { animation: shake 0.4s; }
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
