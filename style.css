@@ -296,12 +296,23 @@ select:focus {
 
 .top-scoreboard .team-score {
     font-family: var(--font-title);
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     color: var(--primary);
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    padding: 8px 20px;
+    border-radius: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
 }
 
 .top-scoreboard .score-val {
-    color: var(--text-main);
+    color: var(--primary-light);
+    font-size: 1.8rem;
+    border-right: 2px solid var(--glass-border);
+    padding-right: 10px;
 }
 
 .first-bidder-badge {
@@ -957,128 +968,161 @@ select:focus {
 }
 
 /* ══════════════════════════════════════
-   MOBILE & RESPONSIVE TWEAKS
+   MOBILE & RESPONSIVE TWEAKS (Portrait Friendly)
    ══════════════════════════════════════ */
 
-/* Rotate Overlay */
-.rotate-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: var(--bg-deep);
-    z-index: 99999;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
-    color: var(--primary);
-}
-
-.rotate-icon {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 20px;
-    animation: rotatePhone 2s infinite ease-in-out;
-}
-
-@keyframes rotatePhone {
-    0% { transform: rotate(0deg); }
-    50% { transform: rotate(90deg); }
-    100% { transform: rotate(90deg); }
-}
-
-.rotate-overlay h2 { font-family: var(--font-title); font-size: 2.5rem; margin-bottom: 10px; }
-.rotate-overlay p { color: var(--text-muted); font-size: 1.1rem; }
-
-/* Force Landscape for mobile/tablet portrait */
-@media screen and (orientation: portrait) and (max-width: 900px) {
-    .rotate-overlay { display: flex; }
-    .top-nav, .setup-screen, .app { display: none !important; }
-}
-
-/* Landscape Optimizations (Fit everything in one screen - Even on small iPhones) */
-@media screen and (max-height: 500px) {
+@media (max-width: 768px) {
+    /* Base */
     .app { 
-        padding: 5px 10px; 
-        gap: 4px; 
-        min-height: 100vh; 
-        display: flex; 
-        flex-direction: column; 
-        justify-content: space-between;
+        padding: 12px; 
+        gap: 15px; 
+        min-height: auto;
     }
-    
-    .top-nav, .header { display: none !important; }
-    
-    .top-scoreboard { 
-        padding: 4px 12px; 
-        margin-bottom: 2px; 
-        border-radius: 8px;
-        transform: scale(0.95);
-    }
-    .top-scoreboard .team-score { font-size: 1rem; }
-    .first-bidder-badge { padding: 1px 8px; font-size: 0.7rem; gap: 3px; }
-    
-    .question-panel { 
-        padding: 6px 12px; 
-        border-radius: 10px; 
-        flex: 0 1 auto;
-        margin-bottom: 2px;
-    }
-    .question-text { font-size: 1rem; line-height: 1.1; font-weight: normal; }
-    .category-badge { margin-bottom: 1px; padding: 1px 6px; font-size: 0.65rem; }
-    
-    .game-area { gap: 6px; flex: 1; align-items: stretch; margin-bottom: 2px; }
-    
-    .player-card { padding: 4px 8px; border-radius: 10px; }
-    .player-header { margin-bottom: 2px; }
-    .avatar { width: 28px; height: 28px; font-size: 0.9rem; margin-left: 5px; }
-    .player-name { font-size: 0.75rem; }
-    .player-score { font-size: 1.4rem; }
-    
-    .bid-display { margin: 3px 0; padding: 2px 6px; border-radius: 6px; }
-    .bid-label { font-size: 0.6rem; }
-    .bid-value { font-size: 1.2rem; }
-    
-    .bid-adjuster { gap: 3px; margin-bottom: 2px; }
-    .bid-number { font-size: 1.2rem; min-width: 20px; }
-    .bid-btn { width: 26px; height: 26px; font-size: 0.8rem; }
-    
-    .action-btn { padding: 4px 8px; font-size: 0.75rem; border-radius: 6px; }
-    .action-btn i { width: 12px; height: 12px; }
-    
-    /* Timer Column */
-    .timer-column { gap: 4px; width: 100px; }
-    .timer-ring { width: 70px; height: 70px; border-width: 4px; }
-    .timer-seconds { font-size: 1.6rem; }
-    .timer-btn { padding: 2px 8px; font-size: 0.7rem; }
-    
-    /* Result Screen Landscape */
-    .result-overlay { padding: 5px; }
-    .result-card { 
-        padding: 10px 15px; 
-        max-width: 98%; 
-        gap: 10px;
-        border-width: 1px;
-    }
-    .result-icon { font-size: 2.2rem; }
-    .result-title { font-size: 1.3rem; }
-    .result-desc { font-size: 0.75rem; margin-bottom: 5px; }
-    
-    .correct-answers-view { 
-        padding: 6px; 
-        max-height: 140px; 
-    }
-    .correct-answers-view h4 { font-size: 0.8rem; margin-bottom: 4px; }
-    .correct-answers-view ul { grid-template-columns: repeat(4, 1fr); gap: 3px; }
-    .correct-answers-view li { font-size: 0.65rem; }
-    
-    .session-stats { margin-bottom: 5px; gap: 3px; }
-    .stat-box { padding: 3px 8px; font-size: 0.7rem; }
 
-    /* Bottom Controls */
-    .bottom-controls { margin-top: 2px; padding-top: 2px; gap: 5px; }
-    .control-btn { padding: 4px 10px; font-size: 0.7rem; }
+    .top-nav { padding: 10px 15px; }
+    .header { margin-bottom: 10px; }
+    .logo-text { font-size: 1.8rem; }
+    .logo-sub { font-size: 0.7rem; letter-spacing: 3px; }
+
+    /* Top Scoreboard */
+    .top-scoreboard { 
+        padding: 10px; 
+        gap: 10px; 
+        flex-wrap: wrap;
+        justify-content: center;
+        border-radius: 16px;
+    }
+    .top-scoreboard .team-score { 
+        font-size: 1.1rem; 
+        padding: 6px 12px; 
+        flex: 1; 
+        justify-content: center;
+        min-width: 120px;
+    }
+    .top-scoreboard .score-val { font-size: 1.4rem; padding-right: 8px; }
+    .first-bidder-badge { 
+        order: 3; 
+        width: 100%; 
+        justify-content: center; 
+        font-size: 0.85rem;
+    }
+
+    /* Setup Screen */
+    .setup-container { padding: 20px; width: 95%; }
+    .setup-logo { font-size: 2rem; }
+    .setup-start-btn { height: 55px; font-size: 1.3rem; }
+
+    /* Question Panel */
+    .question-panel { padding: 15px; border-radius: 16px; }
+    .question-text { font-size: 1.3rem; line-height: 1.4; }
+    .category-badge { font-size: 0.8rem; padding: 4px 12px; }
+
+    /* Game Area Layout (Vertical Stacking) */
+    .game-area {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "timer"
+            "p1"
+            "p2";
+        gap: 15px;
+    }
+
+    .timer-column { 
+        width: 100%; 
+        flex-direction: row; 
+        justify-content: center; 
+        gap: 20px;
+        order: 1;
+    }
+
+    #p1Card { order: 2; }
+    #p2Card { order: 3; }
+
+    /* Player Cards */
+    .player-card { 
+        width: 100%; 
+        padding: 15px; 
+        border-radius: 20px; 
+    }
+    .avatar { width: 45px; height: 45px; font-size: 1.2rem; }
+    .player-name { font-size: 1rem; }
+    .player-score { font-size: 2.2rem; }
+
+    .bid-display { padding: 8px; margin: 10px 0; }
+    .bid-value { font-size: 1.8rem; }
+
+    /* Controls */
+    .bid-controls { gap: 10px; }
+    .bid-adjuster { 
+        background: var(--glass);
+        padding: 5px;
+        border-radius: 12px;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .bid-btn { width: 48px; height: 48px; font-size: 1.2rem; }
+    .bid-number { font-size: 1.8rem; min-width: 40px; }
+
+    .action-btn { 
+        height: 50px; 
+        font-size: 1rem; 
+        width: 100%; 
+        border-radius: 12px;
+    }
+
+    .action-btn.big { height: 65px; font-size: 1.4rem; }
+
+    /* Timer Container */
+    .timer-container { width: 140px; height: 140px; }
+    .timer-ring { width: 140px; height: 140px; border-width: 8px; }
+    .timer-seconds { font-size: 3rem; }
+    .timer-btn { height: 40px; padding: 0 15px; font-size: 0.85rem; }
+
+    /* Challenge Phase */
+    .challenge-phase { padding: 15px; border-radius: 20px; }
+    .challenge-title { font-size: 1.3rem; }
+    .target-num { font-size: 2.5rem; }
+    
+    .manual-controls { gap: 10px; }
+    .auto-controls { flex-direction: column; }
+    #autoAnswerInput { height: 50px; font-size: 1.1rem; }
+
+    /* Modals & Overlays */
+    .modal-content { 
+        width: 90%; 
+        max-height: 85vh; 
+        padding: 0; 
+        border-radius: 24px;
+    }
+    .modal-header { padding: 15px 20px; }
+    .modal-body { padding: 15px; }
+
+    .result-card { 
+        width: 90%; 
+        padding: 25px 15px; 
+        border-radius: 24px;
+    }
+    .result-icon { font-size: 4rem; margin-bottom: 15px; }
+    .result-title { font-size: 2rem; }
+    .result-desc { font-size: 1rem; margin-bottom: 20px; }
+
+    .correct-answers-view { padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+    .correct-answers-view ul { grid-template-columns: 1fr 1fr; font-size: 0.85rem; }
+
+    /* History & Footer */
+    .history-panel { 
+        max-height: 120px; 
+        padding: 10px; 
+        border-radius: 12px;
+        margin-top: 10px;
+    }
+    
+    .game-footer { 
+        flex-direction: column; 
+        gap: 15px; 
+        margin-top: 10px;
+    }
+    .footer-left, .footer-right { width: 100%; display: flex; gap: 10px; }
 }
 
 /* ══════════════════════════════════════
