@@ -847,41 +847,89 @@ body::before {
     .top-nav, .setup-screen, .app { display: none !important; }
 }
 
-/* Landscape Optimizations for short screens (mobile landscape) */
-@media screen and (max-height: 600px) {
-    .app { padding: 40px 10px 10px; gap: 10px; }
-    .header { display: none; } /* Hide main header to save vertical space */
-    .top-scoreboard { padding: 8px 15px; margin-bottom: 10px; }
-    .top-scoreboard .team-score { font-size: 1.2rem; }
+/* Landscape Optimizations for mobile (Fit everything in one screen) */
+@media screen and (max-height: 550px) {
+    body { overflow: hidden; } /* Prevent scrolling */
+    .app { 
+        padding: 10px; 
+        gap: 5px; 
+        height: 100vh; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center;
+    }
     
-    .question-panel { padding: 15px; border-radius: 16px; }
-    .question-text { font-size: 1.3rem; }
-    .category-badge { margin-bottom: 5px; padding: 4px 12px; font-size: 0.8rem; }
+    .top-nav, .header { display: none !important; } /* Hide all headers */
     
-    .game-area { gap: 10px; }
-    .player-card { padding: 10px; border-radius: 16px; }
-    .avatar { width: 40px; height: 40px; font-size: 1.2rem; margin-bottom: 5px; }
-    .player-name { font-size: 0.9rem; margin-bottom: 2px; }
-    .player-score { font-size: 2rem; }
+    .top-scoreboard { 
+        padding: 5px 15px; 
+        margin-bottom: 5px; 
+        border-radius: 12px;
+    }
+    .top-scoreboard .team-score { font-size: 1.1rem; }
+    .first-bidder-badge { padding: 2px 10px; font-size: 0.75rem; gap: 4px; }
+    .first-bidder-badge i { width: 12px; height: 12px; }
     
-    .bid-display { margin: 10px 0; padding: 8px; }
-    .bid-value { font-size: 1.5rem; }
-    .bid-number { font-size: 1.5rem; min-width: 30px; }
-    .bid-btn { width: 35px; height: 35px; font-size: 1rem; }
-    .action-btn { padding: 8px; font-size: 0.9rem; }
+    .question-panel { 
+        padding: 8px 15px; 
+        border-radius: 12px; 
+        flex: 0 1 auto;
+    }
+    .question-text { font-size: 1.1rem; line-height: 1.2; margin: 0; }
+    .category-badge { margin-bottom: 2px; padding: 2px 8px; font-size: 0.7rem; }
+    .category-badge i { width: 12px; height: 12px; }
     
-    .timer-ring { width: 100px; height: 100px; }
-    .timer-seconds { font-size: 2.5rem; }
-    .timer-btn { padding: 6px 15px; font-size: 0.8rem; }
+    .game-area { 
+        gap: 8px; 
+        flex: 1; 
+        align-items: stretch;
+    }
     
-    .challenge-phase { padding: 15px; }
-    .challenge-title { font-size: 1.2rem; }
-    .action-btn.big { padding: 12px; font-size: 1.1rem; }
+    .player-card { 
+        padding: 6px 10px; 
+        border-radius: 12px; 
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .player-header { margin-bottom: 5px; }
+    .avatar { width: 32px; height: 32px; font-size: 1rem; margin-bottom: 0; margin-left: 8px; }
+    .player-name { font-size: 0.85rem; }
+    .player-score { font-size: 1.6rem; line-height: 1; }
     
-    .modal-content { max-height: 95vh; }
-    .result-card { padding: 20px; }
-    .result-icon { font-size: 3rem; margin-bottom: 10px; }
-    .result-title { font-size: 1.8rem; }
+    .bid-display { margin: 5px 0; padding: 4px; border-radius: 8px; }
+    .bid-label { font-size: 0.65rem; }
+    .bid-value { font-size: 1.3rem; }
+    
+    .bid-adjuster { gap: 5px; margin-bottom: 5px; }
+    .bid-number { font-size: 1.3rem; min-width: 25px; }
+    .bid-btn { width: 30px; height: 30px; font-size: 0.9rem; }
+    
+    .action-btn { padding: 6px; font-size: 0.8rem; border-radius: 8px; }
+    .action-btn i { width: 14px; height: 14px; }
+    
+    /* Timer Column */
+    .timer-column { gap: 8px; width: 120px; }
+    .timer-ring { width: 85px; height: 85px; border-width: 6px; }
+    .timer-seconds { font-size: 2rem; }
+    .timer-btn { padding: 4px 10px; font-size: 0.75rem; border-radius: 20px; }
+    
+    .challenge-phase { padding: 10px; gap: 8px; }
+    .challenge-title { font-size: 1rem; margin-bottom: 0; }
+    .target-box { margin-bottom: 5px; }
+    .target-num { font-size: 1.8rem; }
+    .target-label { font-size: 0.7rem; }
+    
+    .judge-controls { gap: 8px; }
+    .action-btn.big { padding: 8px; font-size: 1rem; }
+    
+    /* Input for auto check */
+    #autoAnswerInput { padding: 8px; font-size: 0.9rem; }
+    
+    /* Bottom Controls */
+    .bottom-controls { margin-top: 5px; padding-top: 5px; gap: 10px; }
+    .control-btn { padding: 6px 12px; font-size: 0.75rem; }
+    .control-btn i { width: 14px; height: 14px; }
 }
 
 /* ══════════════════════════════════════
