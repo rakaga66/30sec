@@ -557,8 +557,8 @@ function updateUI() {
 
 function adjustBid(player, delta) {
     const pIdx = player - 1;
-    const q = window.gameQuestions[G.qIndex];
-    const max = (q && q.answers) ? q.answers.length : 50;
+    // Removed the cap based on answers length to allow higher bidding as requested
+    const max = 50; 
     const min = G.currentBid + 1;
     
     G.bidNums[pIdx] = Math.max(min, Math.min(max, G.bidNums[pIdx] + delta));
