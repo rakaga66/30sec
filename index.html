@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي الـ 30 ثانية</title>
+    <meta name="description" content="لعبة تحدي الـ 30 ثانية — مسابقة مزايدة ممتعة بين لاعبين">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Lalezar&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="dark-mode">
+
+<!-- Rotate Device Overlay -->
+<div class="rotate-overlay" id="rotateOverlay">
+    <i data-lucide="smartphone" class="rotate-icon"></i>
+    <h2>الرجاء تدوير الجهاز</h2>
+    <p>هذه اللعبة مصممة لتلعب بوضع العرض (Landscape) للحصول على أفضل تجربة.</p>
+</div>
+
+<!-- ═══════════════════════════════════
+     HEADER & THEME TOGGLE
+     ═══════════════════════════════════ -->
+<nav class="top-nav">
+    <button class="icon-btn" id="howToPlayBtn" title="كيف تلعب؟">
+        <i data-lucide="help-circle"></i>
+    </button>
+    <button class="icon-btn" id="themeToggleBtn" title="تبديل الوضع">
+        <i data-lucide="moon" id="themeIcon"></i>
+    </button>
+</nav>
+
+<!-- ═══════════════════════════════════
+     SETUP SCREEN
+     ═══════════════════════════════════ -->
+<div class="setup-screen" id="setupScreen">
+    <div class="setup-logo">
+        <i data-lucide="clock" class="logo-icon"></i>
+        <span>تحدي الـ 30 ثانية</span>
+    </div>
+    
+    <div class="setup-container">
+        <div class="setup-section">
+            <h3>👤 اللاعبين</h3>
+            <div class="input-group">
+                <input class="setup-input" id="player1Name" placeholder="اسم اللاعب الأول / الفريق الأول">
+                <input class="setup-input" id="player2Name" placeholder="اسم اللاعب الثاني / الفريق الثاني">
+            </div>
+        </div>
+
+        <div class="setup-section">
+            <h3>🎮 إعدادات الجلسة</h3>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>نمط اللعب</label>
+                    <select id="gameMode">
+                        <option value="1v1">فردي 1v1</option>
+                        <option value="2v2">فرق 2v2</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>نظام الحكم</label>
+                    <select id="judgeMode">
+                        <option value="host">حكم خارجي</option>
+                        <option value="opponent">الخصم يحكم</option>
+                        <option value="auto">تحقق تلقائي</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>هدف الفوز</label>
+                    <select id="winCondition">
+                        <option value="10">10 نقاط</option>
+                        <option value="20">20 نقطة</option>
+                        <option value="30">30 نقطة</option>
+                        <option value="0">بدون نهاية</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button class="setup-start-btn" id="startGameBtn">
+            <i data-lucide="play-circle"></i>
+            <span>ابدأ اللعبة</span>
+        </button>
+        
+        <button class="btn-text" id="resumeGameBtn" style="display:none;">استكمال الجلسة السابقة</button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     GAME BOARD
+     ═══════════════════════════════════ -->
+<div class="app" id="gameBoard" style="display:none;">
+
+    <header class="header">
+        <div class="logo-text">تحدي الـ 30 ثانية</div>
+        <div class="logo-sub">30SEC CHALLENGE</div>
+    </header>
+
+    <div class="top-scoreboard" id="topScoreboard">
+        <div class="team-score"><span id="topP1Name">لاعب 1</span>: <span class="score-val" id="topP1ScoreVal">0</span></div>
+        <div class="first-bidder-badge"><i data-lucide="play"></i> البداية عند: <span id="topFirstBidder">لاعب 1</span></div>
+        <div class="team-score"><span id="topP2Name">لاعب 2</span>: <span class="score-val" id="topP2ScoreVal">0</span></div>
+    </div>
+
+    <div class="question-panel" id="questionPanel">
+        <div class="category-badge" id="categoryBadge">
+            <i data-lucide="layers"></i>
+            <span id="categoryName">جاري التحميل...</span>
+        </div>
+        <div class="question-text" id="questionText">هل أنت مستعد؟</div>
+        <button class="btn-skip" id="skipQuestionBtn" title="تخطي السؤال">
+            <i data-lucide="skip-forward"></i>
+        </button>
+    </div>
+
+    <div class="game-area">
+        <!-- Player 1 -->
+        <div class="player-card" id="p1Card">
+            <div class="turn-badge">دوره</div>
+            <div class="avatar" id="p1Avatar">1</div>
+            <div class="player-name" id="p1NameLabel">لاعب 1</div>
+            <div class="player-score" id="p1Score">0</div>
+            
+            <div class="bid-display" id="p1BidDisplay">
+                <div class="bid-label"><i data-lucide="coins"></i> المزايدة</div>
+                <div class="bid-value" id="p1BidValue">—</div>
+            </div>
+
+            <div class="bid-controls" id="p1Controls">
+                <div class="bid-adjuster">
+                    <button class="bid-btn" data-player="1" data-delta="-1">—</button>
+                    <div class="bid-number" id="p1BidNum">3</div>
+                    <button class="bid-btn" data-player="1" data-delta="1">+</button>
+                </div>
+                <div class="action-row">
+                    <button class="action-btn btn-bid" data-player="1">💰 زايد</button>
+                    <button class="action-btn btn-challenge" data-player="1" style="display:none;" title="اضغط هنا لو ما تصدق إن خصمك يقدر يجيب العدد اللي زايد عليه">🔥 تحداك تثبت!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer-container" id="timerContainer">
+            <div class="timer-ring">
+                <svg viewBox="0 0 160 160">
+                    <circle class="timer-track" cx="80" cy="80" r="70"></circle>
+                    <circle class="timer-progress" id="timerProgress" cx="80" cy="80" r="70"></circle>
+                </svg>
+                <div class="timer-display">
+                    <div class="timer-seconds" id="timerSeconds">30</div>
+                    <div class="timer-label">ثانية</div>
+                </div>
+            </div>
+            <button class="timer-btn" id="timerBtn" style="display:none;">
+                <i data-lucide="timer"></i>
+                <span id="timerBtnText">ابدأ العد</span>
+            </button>
+        </div>
+
+        <!-- Player 2 -->
+        <div class="player-card" id="p2Card">
+            <div class="turn-badge">دوره</div>
+            <div class="avatar" id="p2Avatar">2</div>
+            <div class="player-name" id="p2NameLabel">لاعب 2</div>
+            <div class="player-score" id="p2Score">0</div>
+            
+            <div class="bid-display" id="p2BidDisplay">
+                <div class="bid-label"><i data-lucide="coins"></i> المزايدة</div>
+                <div class="bid-value" id="p2BidValue">—</div>
+            </div>
+
+            <div class="bid-controls" id="p2Controls" style="display:none;">
+                <div class="bid-adjuster">
+                    <button class="bid-btn" data-player="2" data-delta="-1">—</button>
+                    <div class="bid-number" id="p2BidNum">3</div>
+                    <button class="bid-btn" data-player="2" data-delta="1">+</button>
+                </div>
+                <div class="action-row">
+                    <button class="action-btn btn-bid" data-player="2">💰 زايد</button>
+                    <button class="action-btn btn-challenge" data-player="2" style="display:none;" title="اضغط هنا لو ما تصدق إن خصمك يقدر يجيب العدد اللي زايد عليه">🔥 تحداك تثبت!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenge Phase -->
+    <div class="challenge-phase" id="challengePhase">
+        <div class="challenge-header">
+            <div class="challenge-title">🎯 <span id="challengerName">اللاعب</span> في وضع التحدي</div>
+            <div class="challenge-count">
+                <span class="count-item success">✅ <span id="correctCount">0</span> / <span id="targetCount">0</span></span>
+                <span class="count-item failure">❌ <span id="wrongCount">0</span></span>
+            </div>
+        </div>
+
+        <!-- Start Trigger -->
+        <div id="startChallengeRow" class="challenge-controls-row">
+            <button class="action-btn btn-next big" id="beginTimerBtn">
+                <i data-lucide="flame"></i>
+                ابدأ التحدي الآن!
+            </button>
+        </div>
+
+        <!-- Judge Controls -->
+        <div id="judgeControlsRow" class="challenge-controls-row" style="display:none;">
+            <!-- Manual / Opponent -->
+            <div class="manual-controls" id="manualJudgeUI">
+                <button class="action-btn btn-accept" id="btnAccept"><i data-lucide="check-circle"></i> صح</button>
+                <button class="action-btn btn-reject" id="btnReject"><i data-lucide="x-circle"></i> غلط</button>
+            </div>
+            <!-- Auto Check -->
+            <div class="auto-controls" id="autoJudgeUI" style="display:none;">
+                <input type="text" id="autoAnswerInput" placeholder="اكتب الإجابة هنا...">
+                <button class="action-btn btn-bid" id="btnCheck"><i data-lucide="search"></i> تحقق</button>
+            </div>
+        </div>
+
+        <div class="answers-list" id="answersList"></div>
+    </div>
+
+    <!-- History -->
+    <div class="history-panel">
+        <div class="history-title"><i data-lucide="scroll-text"></i> سجل الجولة</div>
+        <div id="historyLog"></div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="game-footer">
+        <button class="action-btn btn-next" id="nextRoundBtn">السؤال التالي <i data-lucide="chevron-left"></i></button>
+        <button class="action-btn btn-reset" id="resetGameBtn"><i data-lucide="rotate-ccw"></i> إعادة ضبط</button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     MODALS
+     ═══════════════════════════════════ -->
+
+<!-- How to Play Modal -->
+<div class="modal" id="howToPlayModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>كيف تلعب؟</h2>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <ol class="how-to-list">
+                <li><span>1</span>كل لاعب يزايد بعدد الإجابات اللي يقدر يعطيها للسؤال.</li>
+                <li><span>2</span>الخصم يقدر يزيد المزايدة أو "يتحداك" تثبت قدرتك.</li>
+                <li><span>3</span>اللي يقبل التحدي لازم يجيب العدد المطلوب خلال 30 ثانية.</li>
+                <li><span>4</span>لو نجح: ياخذ نقاط تساوي الرقم اللي زايد عليه.</li>
+                <li><span>5</span>لو فشل: الخصم هو اللي ياخذ النقاط!</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<!-- Win Modal -->
+<div class="result-overlay" id="resultOverlay">
+    <div class="result-card" id="resultCard">
+        <div class="result-icon" id="resultEmoji"><i data-lucide="party-popper"></i></div>
+        <div class="result-title" id="resultTitle">نتيجة التحدي</div>
+        <div class="result-desc" id="resultDesc">—</div>
+        
+        <div class="correct-answers-view" id="correctAnswersView">
+            <h4>الإجابات الصحيحة المتاحة:</h4>
+            <ul id="answersRevealList"></ul>
+        </div>
+
+        <button class="action-btn btn-next" id="closeResultBtn">متابعة اللعب</button>
+    </div>
+</div>
+
+<!-- Final Win Modal -->
+<div class="result-overlay" id="finalWinOverlay">
+    <div class="result-card highlight">
+        <div class="result-icon pulse"><i data-lucide="trophy"></i></div>
+        <div class="result-title">بطل التحدي!</div>
+        <div class="result-desc"><span id="winnerName">...</span> هو الفائز في هذه الجلسة!</div>
+        
+        <div class="session-stats" id="sessionStats">
+            <!-- Stats will be injected here -->
+        </div>
+
+        <button class="action-btn btn-next" id="restartGameBtn">العب مرة ثانية</button>
+    </div>
+</div>
+
+<script src="questions.js"></script>
+<script>
+// ══════════════════════════════════════
+//  GAME ENGINE
+// ══════════════════════════════════════
+
+const G = {
+    // State
+    players: ['لاعب 1', 'لاعب 2'],
+    scores: [0, 0],
+    gameMode: '1v1',        // '1v1' | '2v2'
+    judgeMode: 'host',      // 'host' | 'opponent' | 'auto'
+    winCondition: 10,       // 0 for endless
+    
+    currentBidder: 0,       
+    startingBidder: 0,      // Alternates each round
+    currentBid: 0,
+    lastBidder: -1,
+    bidNums: [1, 1],        
+    phase: 'setup',         // 'setup' | 'bidding' | 'challenge' | 'result'
+    
+    challengeTarget: 0,
+    challengedPlayer: -1,
+    correctAnswers: 0,
+    wrongAnswers: 0,
+    givenAnswers: [],
+    
+    qIndex: -1,
+    timerValue: 30,
+    timerMax: 30,
+    timerInterval: null,
+    timerRunning: false,
+    usedQuestions: new Set(),
+
+    // Stats
+    stats: {
+        rounds: 0,
+        successfulChallenges: [0, 0],
+        highestBid: 0,
+        fastestChallenge: 999
+    }
+};
+
+// Audio System
+const AudioSystem = {
+    ctx: null,
+    init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    },
+    playTone(freq, duration, type = 'sine', ramp = true) {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        if (ramp) {
+            osc.frequency.exponentialRampToValueAtTime(freq * 2, this.ctx.currentTime + duration);
+        }
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+    },
+    correct() { this.playTone(440, 0.2); },
+    wrong() { this.playTone(200, 0.3, 'sawtooth', false); },
+    win() {
+        [261, 329, 392].forEach((f, i) => {
+            setTimeout(() => this.playTone(f, 0.3), i * 150);
+        });
+    },
+    tick() { this.playTone(880, 0.05, 'square', false); }
+};
+
+// ══════════════════════════════════════
+//  INITIALIZATION
+// ══════════════════════════════════════
+
+function setupEventListeners() {
+    // Debounce helper
+    function withDebounce(fn) {
+        let disabled = false;
+        return function(...args) {
+            if (disabled) return;
+            disabled = true;
+            fn.apply(this, args);
+            setTimeout(() => disabled = false, 400);
+        };
+    }
+
+    // Setup
+    document.getElementById('startGameBtn').addEventListener('click', withDebounce(startGame));
+    document.getElementById('resumeGameBtn').addEventListener('click', withDebounce(() => {
+        loadState();
+        document.getElementById('setupScreen').style.display = 'none';
+        document.getElementById('gameBoard').style.display = 'flex';
+        updateUI();
+    }));
+
+    // Theme
+    document.getElementById('themeToggleBtn').addEventListener('click', withDebounce(toggleTheme));
+
+    // Bidding
+    document.querySelectorAll('.bid-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            adjustBid(parseInt(btn.dataset.player), parseInt(btn.dataset.delta));
+        });
+    });
+    document.querySelectorAll('.btn-bid').forEach(btn => {
+        btn.addEventListener('click', withDebounce(() => placeBid(parseInt(btn.dataset.player))));
+    });
+    document.querySelectorAll('.btn-challenge').forEach(btn => {
+        btn.addEventListener('click', withDebounce(startChallenge));
+    });
+
+    // Challenge
+    document.getElementById('beginTimerBtn').addEventListener('click', withDebounce(beginCountdown));
+    document.getElementById('btnAccept').addEventListener('click', withDebounce(hostAccept));
+    document.getElementById('btnReject').addEventListener('click', withDebounce(hostReject));
+    document.getElementById('btnCheck').addEventListener('click', withDebounce(autoCheck));
+    document.getElementById('autoAnswerInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') autoCheck();
+    });
+
+    // Timer
+    document.getElementById('timerBtn').addEventListener('click', withDebounce(toggleTimer));
+
+    // Navigation
+    document.getElementById('nextRoundBtn').addEventListener('click', withDebounce(nextRound));
+    document.getElementById('skipQuestionBtn').addEventListener('click', withDebounce(skipQuestion));
+    document.getElementById('resetGameBtn').addEventListener('click', withDebounce(confirmReset));
+    document.getElementById('closeResultBtn').addEventListener('click', withDebounce(closeResult));
+    document.getElementById('restartGameBtn').addEventListener('click', withDebounce(() => location.reload()));
+
+    // Modals
+    document.getElementById('howToPlayBtn').addEventListener('click', () => openModal('howToPlayModal'));
+    document.querySelectorAll('.close-modal').forEach(btn => {
+        btn.addEventListener('click', () => btn.closest('.modal').classList.remove('active'));
+    });
+}
+
+// ══════════════════════════════════════
+//  CORE LOGIC
+// ══════════════════════════════════════
+
+function startGame() {
+    AudioSystem.init();
+    
+    G.players[0] = document.getElementById('player1Name').value.trim() || 'الفريق 1';
+    G.players[1] = document.getElementById('player2Name').value.trim() || 'الفريق 2';
+    G.gameMode = document.getElementById('gameMode').value;
+    G.judgeMode = document.getElementById('judgeMode').value;
+    G.winCondition = parseInt(document.getElementById('winCondition').value);
+    
+    G.startingBidder = 0;
+    G.scores = [0, 0];
+    G.usedQuestions.clear();
+    
+    document.getElementById('setupScreen').style.display = 'none';
+    document.getElementById('gameBoard').style.display = 'flex';
+    
+    saveState();
+    loadQuestion();
+    lucide.createIcons();
+}
+
+function loadQuestion() {
+    try {
+        if (!window.gameQuestions || window.gameQuestions.length === 0) {
+            alert("❌ ما تم تحميل الأسئلة. تأكد من ملف questions.js");
+            return;
+        }
+
+        if (G.usedQuestions.size >= window.gameQuestions.length) G.usedQuestions.clear();
+        
+        let idx;
+        let attempts = 0;
+        do { 
+            idx = Math.floor(Math.random() * window.gameQuestions.length); 
+            attempts++;
+        } while (G.usedQuestions.has(idx) && attempts < 100);
+        
+        G.usedQuestions.add(idx);
+        G.qIndex = idx;
+        const q = window.gameQuestions[idx];
+
+        G.currentBid = 0;
+        G.lastBidder = -1;
+        G.bidNums = [1, 1];
+        G.phase = 'bidding';
+        G.currentBidder = G.startingBidder;
+        
+        // UI Updates
+        document.getElementById('categoryName').textContent = q.category;
+        document.getElementById('questionText').textContent = q.question;
+        document.getElementById('skipQuestionBtn').style.display = 'flex';
+        
+        resetTimer();
+        updateUI();
+        saveState();
+    } catch (e) {
+        console.error("Error in loadQuestion:", e);
+    }
+}
+
+function updateUI() {
+    // Top Scoreboard
+    document.getElementById('topP1Name').textContent = G.players[0];
+    document.getElementById('topP2Name').textContent = G.players[1];
+    document.getElementById('topP1ScoreVal').textContent = G.scores[0];
+    document.getElementById('topP2ScoreVal').textContent = G.scores[1];
+    document.getElementById('topFirstBidder').textContent = G.players[G.startingBidder];
+
+    // Player Labels
+    document.getElementById('p1NameLabel').textContent = G.players[0];
+
+    document.getElementById('p2NameLabel').textContent = G.players[1];
+    document.getElementById('p1Avatar').textContent = G.players[0][0];
+    document.getElementById('p2Avatar').textContent = G.players[1][0];
+    document.getElementById('p1Score').textContent = G.scores[0];
+    document.getElementById('p2Score').textContent = G.scores[1];
+
+    // Card States
+    document.getElementById('p1Card').className = `player-card ${G.currentBidder === 0 ? 'active' : ''}`;
+    document.getElementById('p2Card').className = `player-card ${G.currentBidder === 1 ? 'active' : ''}`;
+
+    // Bid Displays
+    document.getElementById('p1BidValue').textContent = (G.lastBidder === 0) ? G.currentBid : '—';
+    document.getElementById('p2BidValue').textContent = (G.lastBidder === 1) ? G.currentBid : '—';
+    document.getElementById('p1BidNum').textContent = G.bidNums[0];
+    document.getElementById('p2BidNum').textContent = G.bidNums[1];
+
+    // Controls
+    const p1Controls = document.getElementById('p1Controls');
+    const p2Controls = document.getElementById('p2Controls');
+    
+    p1Controls.style.display = (G.phase === 'bidding' && G.currentBidder === 0) ? 'flex' : 'none';
+    p2Controls.style.display = (G.phase === 'bidding' && G.currentBidder === 1) ? 'flex' : 'none';
+
+    // Toggle Challenge Button
+    const p1ChallengeBtn = p1Controls.querySelector('.btn-challenge');
+    const p2ChallengeBtn = p2Controls.querySelector('.btn-challenge');
+    p1ChallengeBtn.style.display = (G.currentBid > 0) ? 'flex' : 'none';
+    p2ChallengeBtn.style.display = (G.currentBid > 0) ? 'flex' : 'none';
+
+    // Skip Button
+    document.getElementById('skipQuestionBtn').style.display = (G.currentBid === 0) ? 'flex' : 'none';
+
+    // Challenge Phase
+    document.getElementById('challengePhase').className = `challenge-phase ${G.phase === 'challenge' ? 'active' : ''}`;
+    
+    if (G.phase === 'challenge') {
+        document.getElementById('challengerName').textContent = G.players[G.challengedPlayer];
+        document.getElementById('targetCount').textContent = G.challengeTarget;
+        document.getElementById('correctCount').textContent = G.correctAnswers;
+        document.getElementById('wrongCount').textContent = G.wrongAnswers;
+    }
+}
+
+function adjustBid(player, delta) {
+    const pIdx = player - 1;
+    const q = window.gameQuestions[G.qIndex];
+    const max = (q && q.answers) ? q.answers.length : 50;
+    const min = G.currentBid + 1;
+    
+    G.bidNums[pIdx] = Math.max(min, Math.min(max, G.bidNums[pIdx] + delta));
+    updateUI();
+}
+
+function placeBid(player) {
+    const pIdx = player - 1;
+    if (pIdx !== G.currentBidder) return;
+
+    G.currentBid = G.bidNums[pIdx];
+    G.lastBidder = pIdx;
+    
+    addHistory('bid', `${G.players[pIdx]} زايد بـ ${G.currentBid}`);
+    
+    // Switch turn
+    G.currentBidder = (pIdx + 1) % 2;
+    G.bidNums[G.currentBidder] = G.currentBid + 1;
+    
+    updateUI();
+}
+
+function startChallenge() {
+    G.phase = 'challenge';
+    G.challengedPlayer = G.lastBidder;
+    G.challengeTarget = G.currentBid;
+    G.correctAnswers = 0;
+    G.wrongAnswers = 0;
+    G.givenAnswers = [];
+
+    document.getElementById('startChallengeRow').style.display = 'flex';
+    document.getElementById('judgeControlsRow').style.display = 'none';
+    document.getElementById('answersList').innerHTML = '';
+    
+    updateUI();
+    addHistory('challenge', `🔥 ${G.players[G.challengedPlayer]} دخل التحدي! المطلوب: ${G.challengeTarget}`);
+}
+
+function beginCountdown() {
+    document.getElementById('startChallengeRow').style.display = 'none';
+    document.getElementById('judgeControlsRow').style.display = 'flex';
+    document.getElementById('timerBtn').style.display = 'flex';
+
+    // Setup Judge UI based on mode
+    const isAuto = G.judgeMode === 'auto';
+    const isOpponent = G.judgeMode === 'opponent';
+    
+    document.getElementById('manualJudgeUI').style.display = isAuto ? 'none' : 'flex';
+    document.getElementById('autoJudgeUI').style.display = isAuto ? 'flex' : 'none';
+
+    if (isOpponent) {
+        // Logic handled by physical proximity usually, but we can visual guide
+        addHistory('system', `حكم التحدي هو: ${G.players[(G.challengedPlayer + 1) % 2]}`);
+    }
+
+    startTimer();
+}
+
+function hostAccept() {
+    if (!G.timerRunning) return;
+    G.correctAnswers++;
+    AudioSystem.correct();
+    addAnswerChip(true, `إجابة ${G.correctAnswers}`);
+    checkChallengeStatus();
+}
+
+function hostReject() {
+    if (!G.timerRunning) return;
+    G.wrongAnswers++;
+    AudioSystem.wrong();
+    addAnswerChip(false, `غلط ${G.wrongAnswers}`);
+    checkChallengeStatus();
+}
+
+function autoCheck() {
+    const input = document.getElementById('autoAnswerInput');
+    const text = input.value.trim();
+    if (!text) return;
+    
+    const q = window.gameQuestions[G.qIndex];
+    if (!q.answers) {
+        alert("السؤال لا يحتوي على إجابات للتحقق التلقائي.");
+        hostAccept(); // Fallback
+        input.value = '';
+        return;
+    }
+
+    const normalizedInput = normalizeArabic(text);
+    const match = q.answers.find(a => normalizeArabic(a) === normalizedInput);
+
+    if (match && !G.givenAnswers.includes(match)) {
+        G.givenAnswers.push(match);
+        G.correctAnswers++;
+        AudioSystem.correct();
+        addAnswerChip(true, match);
+    } else {
+        G.wrongAnswers++;
+        AudioSystem.wrong();
+        addAnswerChip(false, text);
+    }
+
+    input.value = '';
+    checkChallengeStatus();
+}
+
+function checkChallengeStatus() {
+    document.getElementById('correctCount').textContent = G.correctAnswers;
+    document.getElementById('wrongCount').textContent = G.wrongAnswers;
+
+    if (G.correctAnswers >= G.challengeTarget) {
+        endChallenge(true);
+    } else if (G.wrongAnswers > 0) {
+        endChallenge(false);
+    }
+}
+
+function endChallenge(success) {
+    stopTimer();
+    G.phase = 'result';
+    
+    const challenger = G.challengedPlayer;
+    const opponent = (challenger + 1) % 2;
+    const points = G.challengeTarget;
+
+    // Update stats
+    G.stats.rounds++;
+    if (success) {
+        G.scores[challenger] += points;
+        G.stats.successfulChallenges[challenger]++;
+        G.stats.fastestChallenge = Math.min(G.stats.fastestChallenge, 30 - G.timerValue);
+        showResult('🎉', `كفو يا ${G.players[challenger]}!`, `حققت ${G.challengeTarget} إجابات وحصلت على النقاط.`);
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        AudioSystem.win();
+    } else {
+        G.scores[opponent] += points;
+        showResult('😵', `للأسف يا ${G.players[challenger]}!`, `أخطأت في إجابة أو انتهى الوقت، النقاط راحت لـ ${G.players[opponent]}.`);
+        AudioSystem.wrong();
+    }
+
+
+    G.stats.highestBid = Math.max(G.stats.highestBid, G.challengeTarget);
+    
+    // Alternate starting bidder for NEXT round
+    G.startingBidder = (G.startingBidder + 1) % 2;
+
+    checkWinCondition();
+    saveState();
+}
+
+function checkWinCondition() {
+    if (G.winCondition > 0) {
+        const winnerIdx = G.scores.findIndex(s => s >= G.winCondition);
+        if (winnerIdx !== -1) {
+            setTimeout(() => showFinalWin(winnerIdx), 1500);
+        }
+    }
+}
+
+// ══════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════
+
+function normalizeArabic(text) {
+    return text.replace(/[أإآ]/g, 'ا')
+               .replace(/ة/g, 'ه')
+               .replace(/ى/g, 'ي')
+               .replace(/[\u064B-\u0652]/g, '') // Remove tashkeel
+               .replace(/\s+/g, '') // Remove spaces
+               .toLowerCase();
+}
+
+function addAnswerChip(correct, text) {
+    const list = document.getElementById('answersList');
+    const chip = document.createElement('div');
+    chip.className = `answer-chip ${correct ? 'correct' : 'wrong'}`;
+    chip.innerHTML = `<i data-lucide="${correct ? 'check' : 'x'}"></i> ${text}`;
+    list.prepend(chip);
+    lucide.createIcons();
+}
+
+function startTimer() {
+    if (G.timerRunning) return;
+    G.timerRunning = true;
+    document.getElementById('timerBtn').classList.add('running');
+    document.getElementById('timerBtnText').textContent = "إيقاف";
+    
+    G.timerInterval = setInterval(() => {
+        G.timerValue--;
+        updateTimerDisplay();
+        
+        if (G.timerValue <= 5) {
+            AudioSystem.tick();
+            document.getElementById('timerProgress').classList.add('danger');
+        }
+
+        if (G.timerValue <= 0) {
+            endChallenge(false);
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    G.timerRunning = false;
+    clearInterval(G.timerInterval);
+    document.getElementById('timerBtn').classList.remove('running');
+    document.getElementById('timerBtnText').textContent = "استئناف";
+}
+
+function resetTimer() {
+    stopTimer();
+    G.timerValue = G.timerMax;
+    updateTimerDisplay();
+    document.getElementById('timerProgress').classList.remove('danger', 'warning');
+    document.getElementById('timerProgress').style.strokeDashoffset = '0';
+    document.getElementById('timerBtn').style.display = 'none';
+}
+
+function updateTimerDisplay() {
+    document.getElementById('timerSeconds').textContent = G.timerValue;
+    const progress = document.getElementById('timerProgress');
+    const circumference = 2 * Math.PI * 70;
+    const offset = circumference * (1 - G.timerValue / G.timerMax);
+    progress.style.strokeDashoffset = offset;
+}
+
+function toggleTimer() {
+    if (G.timerRunning) stopTimer();
+    else startTimer();
+}
+
+function addHistory(type, text) {
+    const log = document.getElementById('historyLog');
+    const item = document.createElement('div');
+    item.className = `history-item ${type}`;
+    item.textContent = text;
+    log.prepend(item);
+}
+
+function skipQuestion() {
+    if (confirm("تبي تتخطى السؤال؟")) {
+        loadQuestion();
+    }
+}
+
+function confirmReset() {
+    if (confirm("متأكد إنك تبي تصفر النقاط وتبدأ من جديد؟")) {
+        G.scores = [0, 0];
+        localStorage.removeItem('thirtySecChallenge_state');
+        location.reload();
+    }
+}
+
+function showResult(emoji, title, desc) {
+    document.getElementById('resultEmoji').textContent = emoji;
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultDesc').textContent = desc;
+    
+    // Show correct answers if available
+    const q = window.gameQuestions[G.qIndex];
+    const revealList = document.getElementById('answersRevealList');
+    revealList.innerHTML = '';
+    if (q.answers && q.answers.length > 0) {
+        document.getElementById('correctAnswersView').style.display = 'block';
+        q.answers.forEach(a => {
+            const li = document.createElement('li');
+            li.textContent = a;
+            revealList.appendChild(li);
+        });
+    } else {
+        document.getElementById('correctAnswersView').style.display = 'none';
+    }
+
+    document.getElementById('resultOverlay').classList.add('show');
+}
+
+function showFinalWin(winnerIdx) {
+    document.getElementById('winnerName').textContent = G.players[winnerIdx];
+    const statsDiv = document.getElementById('sessionStats');
+    statsDiv.innerHTML = `
+        <div class="stat-box"><span>الجولات:</span> <span>${G.stats.rounds}</span></div>
+        <div class="stat-box"><span>تحديات ناجحة (${G.players[0]}):</span> <span>${G.stats.successfulChallenges[0]}</span></div>
+        <div class="stat-box"><span>تحديات ناجحة (${G.players[1]}):</span> <span>${G.stats.successfulChallenges[1]}</span></div>
+        <div class="stat-box"><span>أعلى مزايدة:</span> <span>${G.stats.highestBid}</span></div>
+        <div class="stat-box"><span>أسرع تحدي:</span> <span>${G.stats.fastestChallenge === 999 ? '—' : G.stats.fastestChallenge + ' ثانية'}</span></div>
+    `;
+    document.getElementById('finalWinOverlay').classList.add('show');
+    confetti({ particleCount: 300, spread: 100, origin: { y: 0.5 } });
+}
+
+function closeResult() {
+    document.getElementById('resultOverlay').classList.remove('show');
+    loadQuestion();
+}
+
+function nextRound() {
+    loadQuestion();
+}
+
+function toggleTheme() {
+
+    const body = document.body;
+    const icon = document.getElementById('themeIcon');
+    if (body.classList.contains('dark-mode')) {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        icon.setAttribute('data-lucide', 'sun');
+    } else {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        icon.setAttribute('data-lucide', 'moon');
+    }
+    lucide.createIcons();
+    saveState();
+}
+
+function openModal(id) {
+    document.getElementById(id).classList.add('active');
+}
+
+function saveState() {
+    const state = {
+        scores: G.scores,
+        players: G.players,
+        usedQuestions: Array.from(G.usedQuestions),
+        startingBidder: G.startingBidder,
+        gameMode: G.gameMode,
+        judgeMode: G.judgeMode,
+        winCondition: G.winCondition,
+        theme: document.body.classList.contains('dark-mode') ? 'dark' : 'light'
+    };
+    localStorage.setItem('thirtySecChallenge_state', JSON.stringify(state));
+}
+
+function loadState() {
+    const saved = localStorage.getItem('thirtySecChallenge_state');
+    if (!saved) return;
+    const state = JSON.parse(saved);
+    G.scores = state.scores;
+    G.players = state.players;
+    G.usedQuestions = new Set(state.usedQuestions);
+    G.startingBidder = state.startingBidder;
+    G.gameMode = state.gameMode;
+    G.judgeMode = state.judgeMode;
+    G.winCondition = state.winCondition;
+    
+    if (state.theme === 'light') {
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+    }
+}
+
+// Check for resume
+window.addEventListener('load', () => {
+    if (localStorage.getItem('thirtySecChallenge_state')) {
+        document.getElementById('resumeGameBtn').style.display = 'block';
+    }
+    setupEventListeners();
+    lucide.createIcons();
+});
+
+</script>
+</body>
+</html>
