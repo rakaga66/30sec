@@ -997,63 +997,88 @@ select:focus {
     .top-nav, .setup-screen, .app { display: none !important; }
 }
 
-/* Landscape Optimizations (Fit everything in one screen) */
-@media screen and (max-height: 550px) {
+/* Landscape Optimizations (Fit everything in one screen - Even on small iPhones) */
+@media screen and (max-height: 500px) {
     .app { 
-        padding: 10px; 
-        gap: 5px; 
+        padding: 5px 10px; 
+        gap: 4px; 
         min-height: 100vh; 
         display: flex; 
         flex-direction: column; 
-        justify-content: center;
+        justify-content: space-between;
     }
     
     .top-nav, .header { display: none !important; }
     
-    .top-scoreboard { padding: 5px 15px; margin-bottom: 5px; border-radius: 12px; }
-    .top-scoreboard .team-score { font-size: 1.1rem; }
-    
-    .question-panel { padding: 8px 15px; border-radius: 12px; flex: 0 1 auto; }
-    .question-text { font-size: 1.1rem; line-height: 1.2; margin: 0; }
-    
-    .game-area { gap: 8px; flex: 1; align-items: stretch; }
-    .player-card { padding: 6px 10px; border-radius: 12px; }
-    .player-score { font-size: 1.6rem; }
-    
-    .timer-column { width: 110px; }
-    .timer-ring { width: 80px; height: 80px; }
-    .timer-seconds { font-size: 1.8rem; }
-    
-    /* Result Screen Landscape Optimization */
-    .result-overlay { padding: 10px; }
-    .result-card { 
-        padding: 15px 25px; 
-        max-width: 95%; 
-        display: flex; 
-        flex-direction: row; 
-        align-items: center; 
-        text-align: right; 
-        gap: 20px;
-        border-radius: 20px;
+    .top-scoreboard { 
+        padding: 4px 12px; 
+        margin-bottom: 2px; 
+        border-radius: 8px;
+        transform: scale(0.95);
     }
-    .result-info { flex: 1; display: flex; flex-direction: column; align-items: center; }
-    .result-icon { font-size: 3rem; margin-bottom: 5px; }
-    .result-title { font-size: 1.5rem; margin-bottom: 5px; }
-    .result-desc { font-size: 0.85rem; margin-bottom: 10px; }
+    .top-scoreboard .team-score { font-size: 1rem; }
+    .first-bidder-badge { padding: 1px 8px; font-size: 0.7rem; gap: 3px; }
+    
+    .question-panel { 
+        padding: 6px 12px; 
+        border-radius: 10px; 
+        flex: 0 1 auto;
+        margin-bottom: 2px;
+    }
+    .question-text { font-size: 1rem; line-height: 1.1; font-weight: normal; }
+    .category-badge { margin-bottom: 1px; padding: 1px 6px; font-size: 0.65rem; }
+    
+    .game-area { gap: 6px; flex: 1; align-items: stretch; margin-bottom: 2px; }
+    
+    .player-card { padding: 4px 8px; border-radius: 10px; }
+    .player-header { margin-bottom: 2px; }
+    .avatar { width: 28px; height: 28px; font-size: 0.9rem; margin-left: 5px; }
+    .player-name { font-size: 0.75rem; }
+    .player-score { font-size: 1.4rem; }
+    
+    .bid-display { margin: 3px 0; padding: 2px 6px; border-radius: 6px; }
+    .bid-label { font-size: 0.6rem; }
+    .bid-value { font-size: 1.2rem; }
+    
+    .bid-adjuster { gap: 3px; margin-bottom: 2px; }
+    .bid-number { font-size: 1.2rem; min-width: 20px; }
+    .bid-btn { width: 26px; height: 26px; font-size: 0.8rem; }
+    
+    .action-btn { padding: 4px 8px; font-size: 0.75rem; border-radius: 6px; }
+    .action-btn i { width: 12px; height: 12px; }
+    
+    /* Timer Column */
+    .timer-column { gap: 4px; width: 100px; }
+    .timer-ring { width: 70px; height: 70px; border-width: 4px; }
+    .timer-seconds { font-size: 1.6rem; }
+    .timer-btn { padding: 2px 8px; font-size: 0.7rem; }
+    
+    /* Result Screen Landscape */
+    .result-overlay { padding: 5px; }
+    .result-card { 
+        padding: 10px 15px; 
+        max-width: 98%; 
+        gap: 10px;
+        border-width: 1px;
+    }
+    .result-icon { font-size: 2.2rem; }
+    .result-title { font-size: 1.3rem; }
+    .result-desc { font-size: 0.75rem; margin-bottom: 5px; }
     
     .correct-answers-view { 
-        margin: 0; 
-        padding: 10px; 
-        flex: 2; 
-        max-height: 180px; 
-        overflow-y: auto; 
+        padding: 6px; 
+        max-height: 140px; 
     }
-    .correct-answers-view h4 { font-size: 0.9rem; }
-    .correct-answers-view ul { grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
-    .correct-answers-view li { font-size: 0.75rem; }
+    .correct-answers-view h4 { font-size: 0.8rem; margin-bottom: 4px; }
+    .correct-answers-view ul { grid-template-columns: repeat(4, 1fr); gap: 3px; }
+    .correct-answers-view li { font-size: 0.65rem; }
     
-    .session-stats { margin-bottom: 10px; gap: 5px; }
-    .stat-box { padding: 5px 10px; font-size: 0.8rem; }
+    .session-stats { margin-bottom: 5px; gap: 3px; }
+    .stat-box { padding: 3px 8px; font-size: 0.7rem; }
+
+    /* Bottom Controls */
+    .bottom-controls { margin-top: 2px; padding-top: 2px; gap: 5px; }
+    .control-btn { padding: 4px 10px; font-size: 0.7rem; }
 }
 
 /* ══════════════════════════════════════
