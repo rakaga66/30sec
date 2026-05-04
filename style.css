@@ -2,8 +2,8 @@
    DESIGN SYSTEM (Hojas Style)
    ══════════════════════════════════════ */
 @font-face {
-    font-family: 'GameFont';
-    src: url('picture/alfont_com_zainpcv2-VF-mobkaffswash.ttf') format('truetype');
+    font-family: 'IOS15Heavy';
+    src: url('auth_system/ios-15-heavy.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -26,8 +26,8 @@
     --glass-border: rgba(255, 255, 255, 0.1);
 
     /* Typography */
-    --font-title: 'GameFont', 'Lalezar', cursive;
-    --font-body: 'GameFont', 'Cairo', sans-serif;
+    --font-title: 'IOS15Heavy', 'Lalezar', cursive;
+    --font-body: 'IOS15Heavy', 'Cairo', sans-serif;
 
     /* Shadows */
     --glow-gold: 0 0 20px rgba(212, 165, 116, 0.2);
@@ -463,6 +463,34 @@ select:focus {
     font-size: 3rem;
     color: var(--primary-light);
     line-height: 1;
+}
+
+.score-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.score-adjust-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.score-adjust-btn:hover {
+    background: var(--primary);
+    color: var(--bg-deep);
+    border-color: var(--primary);
 }
 
 .bid-display {
