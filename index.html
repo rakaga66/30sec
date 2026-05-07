@@ -57,13 +57,6 @@
                 <div class="setup-section">
                     <h3>🎮 إعدادات الجلسة</h3>
                     <div class="settings-grid">
-                        <div class="setting-item">
-                            <label>نمط اللعب</label>
-                            <select id="gameMode">
-                                <option value="1v1">فردي 1v1</option>
-                                <option value="2v2">فرق 2v2</option>
-                            </select>
-                        </div>
 
                     </div>
                 </div>
@@ -457,7 +450,7 @@
 
                 G.players[0] = p1;
                 G.players[1] = p2;
-                G.gameMode = document.getElementById('gameMode').value;
+                G.gameMode = '1v1';
                 G.judgeMode = 'host';
                 G.winCondition = 0;
 
