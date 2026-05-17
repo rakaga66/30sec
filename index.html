@@ -31,10 +31,47 @@
             <button class="icon-btn" id="howToPlayBtn" title="كيف تلعب؟">
                 <i data-lucide="help-circle"></i>
             </button>
+            <button class="icon-btn" id="playersLogBtn" title="سجل اللاعبين">
+                <i data-lucide="users"></i>
+            </button>
             <button class="icon-btn" id="themeToggleBtn" title="تبديل الوضع">
                 <i data-lucide="moon" id="themeIcon"></i>
             </button>
         </nav>
+
+        <!-- ═══════════════════════════════════
+     PLAYERS LOG SCREEN
+     ═══════════════════════════════════ -->
+        <div class="modal" id="playersLogModal">
+            <div class="modal-content players-log-modal">
+                <div class="modal-header">
+                    <h2>👥 سجل اللاعبين</h2>
+                    <button class="close-modal" id="closePlayersLog">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="players-log-summary" id="playersLogSummary">
+                        <div class="summary-stat">
+                            <div class="summary-num" id="totalPlayersCount">0</div>
+                            <div class="summary-label">إجمالي الجلسات</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-num" id="todayPlayersCount">0</div>
+                            <div class="summary-label">جلسات اليوم</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-num" id="uniquePlayersCount">0</div>
+                            <div class="summary-label">أسماء مختلفة</div>
+                        </div>
+                    </div>
+                    <div class="log-controls">
+                        <input class="log-search" id="logSearchInput" type="text" placeholder="🔍 ابحث باسم الجلسة أو اللاعب...">
+                    </div>
+                    <div class="players-log-list" id="playersLogList">
+                        <div class="log-empty">📭 لا يوجد سجل بعد. ابدأ لعبة لتظهر هنا!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- ═══════════════════════════════════
      SETUP SCREEN
@@ -47,17 +84,49 @@
 
             <div class="setup-container">
                 <div class="setup-section">
-                    <h3>👤 اللاعبين</h3>
+                    <h3>🏷️ اسم الجلسة</h3>
                     <div class="input-group">
-                        <input class="setup-input" id="player1Name" placeholder="اسم اللاعب الأول / الفريق الأول">
-                        <input class="setup-input" id="player2Name" placeholder="اسم اللاعب الثاني / الفريق الثاني">
+                        <div class="session-name-wrapper">
+                            <input class="setup-input session-name-input" id="sessionName"
+                                placeholder="مثال: جلسة الجمعة — بيت أحمد"
+                                maxlength="40" autocomplete="off">
+                            <span class="session-required-badge">مطلوب ⚡</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="setup-section">
-                    <h3>🎮 إعدادات الجلسة</h3>
-                    <div class="settings-grid">
+                    <h3>👥 الفرق واللاعبين</h3>
+                    <div class="teams-setup-grid">
+                        <!-- فريق 1 -->
+                        <div class="team-setup-card" id="team1Card">
+                            <div class="team-setup-header t1-header">🔵 الفريق الأول</div>
+                            <input class="setup-input team-name-input" id="team1Name"
+                                placeholder="اسم الفريق الأول" maxlength="25">
+                            <div class="players-input-list" id="team1Players">
+                                <div class="player-input-row">
+                                    <input class="setup-input" type="text" placeholder="اسم اللاعب 1" maxlength="20">
+                                    <button class="remove-player-btn" onclick="removePlayer(this)" style="display:none">✕</button>
+                                </div>
+                            </div>
+                            <button class="add-player-btn" onclick="addPlayer('team1Players')">+ إضافة لاعب</button>
+                        </div>
 
+                        <div class="teams-vs-divider">VS</div>
+
+                        <!-- فريق 2 -->
+                        <div class="team-setup-card" id="team2Card">
+                            <div class="team-setup-header t2-header">🔴 الفريق الثاني</div>
+                            <input class="setup-input team-name-input" id="team2Name"
+                                placeholder="اسم الفريق الثاني" maxlength="25">
+                            <div class="players-input-list" id="team2Players">
+                                <div class="player-input-row">
+                                    <input class="setup-input" type="text" placeholder="اسم اللاعب 1" maxlength="20">
+                                    <button class="remove-player-btn" onclick="removePlayer(this)" style="display:none">✕</button>
+                                </div>
+                            </div>
+                            <button class="add-player-btn" onclick="addPlayer('team2Players')">+ إضافة لاعب</button>
+                        </div>
                     </div>
                 </div>
 
@@ -81,12 +150,34 @@
             </header>
 
             <div class="top-scoreboard" id="topScoreboard">
-                <div class="team-score"><span id="topP1Name">لاعب 1</span>: <span class="score-val"
-                        id="topP1ScoreVal">0</span></div>
-                <div class="first-bidder-badge"><i data-lucide="play"></i> البداية عند: <span id="topFirstBidder">لاعب
-                        1</span></div>
-                <div class="team-score"><span id="topP2Name">لاعب 2</span>: <span class="score-val"
-                        id="topP2ScoreVal">0</span></div>
+                <div class="team-score t1-score">
+                    <span id="topP1Name">فريق 1</span>
+                    <span class="score-val" id="topP1ScoreVal">0</span>
+                </div>
+                <div class="first-bidder-badge">
+                    <i data-lucide="play"></i>
+                    <div style="text-align:center">
+                        <div style="font-size:0.75rem;opacity:0.7">جولة هذه، الاختيار عشوائي</div>
+                        <div id="topFirstBidder" style="font-size:0.9rem">—</div>
+                    </div>
+                </div>
+                <div class="team-score t2-score">
+                    <span id="topP2Name">فريق 2</span>
+                    <span class="score-val" id="topP2ScoreVal">0</span>
+                </div>
+            </div>
+
+            <!-- بانر اللاعبين المختارين -->
+            <div class="round-players-banner" id="roundPlayersBanner" style="display:none">
+                <div class="rp-side rp-t1">
+                    <div class="rp-team-label" id="rpTeam1Label">فريق 1</div>
+                    <div class="rp-player-name" id="rpPlayer1">—</div>
+                </div>
+                <div class="rp-vs">🎮 VS</div>
+                <div class="rp-side rp-t2">
+                    <div class="rp-team-label" id="rpTeam2Label">فريق 2</div>
+                    <div class="rp-player-name" id="rpPlayer2">—</div>
+                </div>
             </div>
 
             <div class="question-panel" id="questionPanel">
@@ -295,18 +386,24 @@
 
             const G = {
                 // State
-                players: ['لاعب 1', 'لاعب 2'],
+                players: ['فريق 1', 'فريق 2'],          // team names
+                teams: [
+                    { name: 'فريق 1', players: ['لاعب 1'] },
+                    { name: 'فريق 2', players: ['لاعب 2'] }
+                ],
+                teamQueues: [[], []],                // Shuffled queues
+                roundPlayers: ['', ''],              // randomly picked each round
                 scores: [0, 0],
-                gameMode: '1v1',        // '1v1' | '2v2'
-                judgeMode: 'host',      // 'host' | 'opponent' | 'auto'
-                winCondition: 10,       // 0 for endless
+                gameMode: '1v1',
+                judgeMode: 'host',
+                winCondition: 0,
 
                 currentBidder: 0,
-                startingBidder: 0,      // Alternates each round
+                startingBidder: 0,
                 currentBid: 0,
                 lastBidder: -1,
                 bidNums: [1, 1],
-                phase: 'setup',         // 'setup' | 'bidding' | 'challenge' | 'result'
+                phase: 'setup',
 
                 challengeTarget: 0,
                 challengedPlayer: -1,
@@ -437,26 +534,169 @@
             //  CORE LOGIC
             // ══════════════════════════════════════
 
-            function startGame() {
-                const p1 = document.getElementById('player1Name').value.trim();
-                const p2 = document.getElementById('player2Name').value.trim();
+            // ══════════════════════════════════════
+            //  PLAYERS LOG SYSTEM
+            // ══════════════════════════════════════
+            const PlayersLog = {
+                STORAGE_KEY: 'thirtySecChallenge_playersLog',
 
-                if (!p1 || !p2) {
-                    alert("عذراً، يجب إدخال أسماء الفريقين لبدء التحدي!");
+                load() {
+                    const raw = localStorage.getItem(this.STORAGE_KEY);
+                    return raw ? JSON.parse(raw) : [];
+                },
+
+                save(log) {
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(log));
+                },
+
+                addEntry(sessionName, p1, p2) {
+                    const log = this.load();
+                    const now = new Date();
+                    log.unshift({
+                        id: Date.now(),
+                        sessionName: sessionName,
+                        player1: p1,
+                        player2: p2,
+                        timestamp: now.toISOString(),
+                        date: now.toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' }),
+                        time: now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+                    });
+                    this.save(log);
+                },
+
+                clear() {
+                    localStorage.removeItem(this.STORAGE_KEY);
+                },
+
+                renderModal(filter = '') {
+                    const log = this.load();
+                    const today = new Date().toDateString();
+                    const todayCount = log.filter(e => new Date(e.timestamp).toDateString() === today).length;
+                    const uniqueNames = new Set(log.flatMap(e => [e.player1, e.player2]));
+
+                    document.getElementById('totalPlayersCount').textContent = log.length;
+                    document.getElementById('todayPlayersCount').textContent = todayCount;
+                    document.getElementById('uniquePlayersCount').textContent = uniqueNames.size;
+
+                    const listEl = document.getElementById('playersLogList');
+                    const q = filter.toLowerCase();
+                    const filtered = filter
+                        ? log.filter(e =>
+                            (e.sessionName || '').toLowerCase().includes(q) ||
+                            e.player1.toLowerCase().includes(q) ||
+                            e.player2.toLowerCase().includes(q)
+                          )
+                        : log;
+
+                    if (filtered.length === 0) {
+                        listEl.innerHTML = `<div class="log-empty">${filter ? '🔍 لا توجد نتائج لهذا البحث' : '📭 لا يوجد سجل بعد. ابدأ لعبة لتظهر هنا!'}</div>`;
+                        return;
+                    }
+
+                    listEl.innerHTML = filtered.map((e, idx) => `
+                        <div class="log-entry" style="animation-delay: ${idx * 0.04}s">
+                            <div class="log-entry-num">#${log.indexOf(e) + 1}</div>
+                            <div class="log-entry-info">
+                                ${e.sessionName ? `<div class="log-session-name">🏷️ ${e.sessionName}</div>` : ''}
+                                <div class="log-players">
+                                    <span class="log-p1">🔵 ${e.player1}</span>
+                                    <span class="log-vs">VS</span>
+                                    <span class="log-p2">🔴 ${e.player2}</span>
+                                </div>
+                                <div class="log-datetime">
+                                    <span>📅 ${e.date}</span>
+                                    <span>🕐 ${e.time}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            };
+
+            function openPlayersLog() {
+                PlayersLog.renderModal();
+                openModal('playersLogModal');
+            }
+
+            // دوال إدارة اللاعبين
+            function addPlayer(listId) {
+                const list = document.getElementById(listId);
+                const count = list.querySelectorAll('.player-input-row').length + 1;
+                const row = document.createElement('div');
+                row.className = 'player-input-row';
+                row.innerHTML = `
+                    <input class="setup-input" type="text" placeholder="اسم اللاعب ${count}" maxlength="20">
+                    <button class="remove-player-btn" onclick="removePlayer(this)">✕</button>
+                `;
+                list.appendChild(row);
+                // Show remove buttons when more than 1 player
+                list.querySelectorAll('.remove-player-btn').forEach(b => b.style.display = 'flex');
+            }
+
+            function removePlayer(btn) {
+                const list = btn.closest('.players-input-list');
+                const rows = list.querySelectorAll('.player-input-row');
+                if (rows.length <= 1) return;
+                btn.closest('.player-input-row').remove();
+                if (list.querySelectorAll('.player-input-row').length === 1) {
+                    list.querySelector('.remove-player-btn').style.display = 'none';
+                }
+            }
+
+            function getTeamPlayers(listId) {
+                const list = document.getElementById(listId);
+                return Array.from(list.querySelectorAll('input'))
+                    .map(i => i.value.trim())
+                    .filter(v => v.length > 0);
+            }
+
+            function pickRandom(arr) {
+                return arr[Math.floor(Math.random() * arr.length)];
+            }
+
+            function shuffleArray(array) {
+                const newArr = [...array];
+                for (let i = newArr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+                }
+                return newArr;
+            }
+
+            function startGame() {
+                const sessionName = document.getElementById('sessionName').value.trim();
+                const team1Name = document.getElementById('team1Name').value.trim() || 'الفريق الأزرق';
+                const team2Name = document.getElementById('team2Name').value.trim() || 'الفريق الأحمر';
+                const team1Players = getTeamPlayers('team1Players');
+                const team2Players = getTeamPlayers('team2Players');
+
+                if (!sessionName) {
+                    const input = document.getElementById('sessionName');
+                    input.classList.add('input-error');
+                    input.focus();
+                    input.placeholder = '⚠️ اسم الجلسة مطلوب قبل البدء!';
+                    setTimeout(() => { input.classList.remove('input-error'); input.placeholder = 'مثال: جلسة الجمعة — بيت أحمد'; }, 2000);
+                    return;
+                }
+                if (team1Players.length === 0 || team2Players.length === 0) {
+                    alert('عذراً، كل فريق يحتاج لاعب واحد على الأقل!');
                     return;
                 }
 
                 AudioSystem.init();
 
-                G.players[0] = p1;
-                G.players[1] = p2;
-                G.gameMode = '1v1';
-                G.judgeMode = 'host';
-                G.winCondition = 0;
-
-                G.startingBidder = 0;
+                G.teams[0] = { name: team1Name, players: team1Players };
+                G.teams[1] = { name: team2Name, players: team2Players };
+                G.teamQueues[0] = shuffleArray(team1Players);
+                G.teamQueues[1] = shuffleArray(team2Players);
+                G.players[0] = team1Name;
+                G.players[1] = team2Name;
                 G.scores = [0, 0];
+                G.startingBidder = 0;
                 G.usedQuestions.clear();
+
+                // سجل الجلسة (نحفظ أسماء الفرق)
+                PlayersLog.addEntry(sessionName, team1Name, team2Name);
 
                 document.getElementById('setupScreen').style.display = 'none';
                 document.getElementById('gameBoard').style.display = 'flex';
@@ -492,10 +732,25 @@
                     G.phase = 'bidding';
                     G.currentBidder = G.startingBidder;
 
+                    // ✨ سحب لاعب من قائمة الانتظار لكل فريق (دورة كاملة قبل التكرار)
+                    if (!G.teamQueues) G.teamQueues = [[], []]; // Fallback for old saves
+                    if (G.teamQueues[0].length === 0) {
+                        G.teamQueues[0] = shuffleArray(G.teams[0].players);
+                    }
+                    if (G.teamQueues[1].length === 0) {
+                        G.teamQueues[1] = shuffleArray(G.teams[1].players);
+                    }
+
+                    G.roundPlayers[0] = G.teamQueues[0].shift();
+                    G.roundPlayers[1] = G.teamQueues[1].shift();
+
                     // UI Updates
                     document.getElementById('categoryName').textContent = q.category;
                     document.getElementById('questionText').textContent = q.question;
                     document.getElementById('skipQuestionBtn').style.display = 'flex';
+
+                    // عرض بانر اللاعبين المختارين
+                    showRoundPlayersBanner();
 
                     resetTimer();
                     updateUI();
@@ -505,20 +760,34 @@
                 }
             }
 
+            function showRoundPlayersBanner() {
+                const banner = document.getElementById('roundPlayersBanner');
+                document.getElementById('rpTeam1Label').textContent = G.teams[0].name;
+                document.getElementById('rpTeam2Label').textContent = G.teams[1].name;
+                document.getElementById('rpPlayer1').textContent = G.roundPlayers[0];
+                document.getElementById('rpPlayer2').textContent = G.roundPlayers[1];
+                document.getElementById('topFirstBidder').textContent =
+                    G.players[G.startingBidder] + ' يبدأ';
+                banner.style.display = 'flex';
+                banner.classList.add('banner-pop');
+                setTimeout(() => banner.classList.remove('banner-pop'), 600);
+            }
+
             function updateUI() {
-                // Top Scoreboard
-                document.getElementById('topP1Name').textContent = G.players[0];
-                document.getElementById('topP2Name').textContent = G.players[1];
+                // Top Scoreboard — أسماء الفرق
+                document.getElementById('topP1Name').textContent = G.teams[0].name;
+                document.getElementById('topP2Name').textContent = G.teams[1].name;
                 document.getElementById('topP1ScoreVal').textContent = G.scores[0];
                 document.getElementById('topP2ScoreVal').textContent = G.scores[1];
-                document.getElementById('topFirstBidder').textContent = G.players[G.startingBidder];
 
-                // Player Labels
-                document.getElementById('p1NameLabel').textContent = G.players[0];
+                // بطاقات اللاعبين — المختار عشوائياً
+                const rp0 = G.roundPlayers[0] || G.teams[0].players[0];
+                const rp1 = G.roundPlayers[1] || G.teams[1].players[0];
 
-                document.getElementById('p2NameLabel').textContent = G.players[1];
-                document.getElementById('p1Avatar').textContent = G.players[0][0];
-                document.getElementById('p2Avatar').textContent = G.players[1][0];
+                document.getElementById('p1NameLabel').textContent = rp0;
+                document.getElementById('p2NameLabel').textContent = rp1;
+                document.getElementById('p1Avatar').textContent = rp0[0] || '?';
+                document.getElementById('p2Avatar').textContent = rp1[0] || '?';
                 document.getElementById('p1Score').textContent = G.scores[0];
                 document.getElementById('p2Score').textContent = G.scores[1];
 
@@ -552,7 +821,8 @@
                 document.getElementById('challengePhase').className = `challenge-phase ${G.phase === 'challenge' ? 'active' : ''}`;
 
                 if (G.phase === 'challenge') {
-                    document.getElementById('challengerName').textContent = G.players[G.challengedPlayer];
+                    const challengerRoundName = G.roundPlayers[G.challengedPlayer] || G.players[G.challengedPlayer];
+                    document.getElementById('challengerName').textContent = challengerRoundName;
                     document.getElementById('targetCount').textContent = G.challengeTarget;
                     document.getElementById('correctCount').textContent = G.correctAnswers;
                     document.getElementById('wrongCount').textContent = G.wrongAnswers;
@@ -598,7 +868,7 @@
                 document.getElementById('answersList').innerHTML = '';
 
                 updateUI();
-                addHistory('challenge', `🔥 ${G.players[G.challengedPlayer]} دخل التحدي! المطلوب: ${G.challengeTarget}`);
+                addHistory('challenge', `🔥 ${G.roundPlayers[G.lastBidder] || G.players[G.lastBidder]} دخل التحدي! المطلوب: ${G.challengeTarget}`);
             }
 
             function beginCountdown() {
@@ -647,18 +917,22 @@
                 const opponent = (challenger + 1) % 2;
                 const points = G.challengeTarget;
 
+                const challengerName = G.roundPlayers[challenger] || G.players[challenger];
+                const opponentTeamName = G.players[opponent];
+                const opponentPlayerName = G.roundPlayers[opponent] || G.players[opponent];
+
                 // Update stats
                 G.stats.rounds++;
                 if (success) {
                     G.scores[challenger] += points;
                     G.stats.successfulChallenges[challenger]++;
                     G.stats.fastestChallenge = Math.min(G.stats.fastestChallenge, 30 - G.timerValue);
-                    showResult('🎉', `كفو يا ${G.players[challenger]}!`, `حققت ${G.challengeTarget} إجابات وحصلت على النقاط.`);
+                    showResult('🎉', `كفو يا ${challengerName}!`, `حققت ${G.challengeTarget} إجابات — نقاط لّـ ${G.teams[challenger].name}!`);
                     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                     AudioSystem.win();
                 } else {
                     G.scores[opponent] += points;
-                    showResult('😵', `للأسف يا ${G.players[challenger]}!`, `أخطأت في إجابة أو انتهى الوقت، النقاط راحت لـ ${G.players[opponent]}.`);
+                    showResult('😵', `للأسف يا ${challengerName}!`, `النقاط راحت لّـ ${opponentTeamName} (${opponentPlayerName}).`);
                     AudioSystem.wrong();
                 }
 
@@ -888,6 +1162,21 @@
                 }
                 setupEventListeners();
                 lucide.createIcons();
+
+                // Players Log Events
+                document.getElementById('playersLogBtn').addEventListener('click', openPlayersLog);
+                document.getElementById('closePlayersLog').addEventListener('click', () => {
+                    document.getElementById('playersLogModal').classList.remove('active');
+                });
+                document.getElementById('clearLogBtn').addEventListener('click', () => {
+                    if (confirm('هل أنت متأكد من مسح سجل اللاعبين كاملاً؟')) {
+                        PlayersLog.clear();
+                        PlayersLog.renderModal();
+                    }
+                });
+                document.getElementById('logSearchInput').addEventListener('input', (e) => {
+                    PlayersLog.renderModal(e.target.value);
+                });
             });
 
         </script>
