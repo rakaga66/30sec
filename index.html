@@ -378,6 +378,21 @@
             </div>
         </div>
 
+        <!-- App Modal (Alert/Confirm) -->
+        <div class="modal" id="appModal" style="z-index: 9999;">
+            <div class="modal-content" style="max-width: 400px; text-align: center;">
+                <div class="modal-body" style="padding: 30px 20px;">
+                    <div id="appModalIcon" style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
+                    <h3 id="appModalTitle" style="margin-bottom: 10px;">رسالة</h3>
+                    <p id="appModalText" style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.5;"></p>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button class="action-btn btn-accept" id="appModalConfirmBtn" style="flex: 1;">موافق</button>
+                        <button class="action-btn btn-reject" id="appModalCancelBtn" style="display: none; flex: 1;">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script src="questions.js"></script>
         <script>
             // ══════════════════════════════════════
@@ -459,6 +474,44 @@
                 },
                 tick() { this.playTone(880, 0.05, 'square', false); }
             };
+
+            // Custom UI Alerts
+            function appAlert(msg, title = 'تنبيه', icon = '⚠️') {
+                document.getElementById('appModalTitle').textContent = title;
+                document.getElementById('appModalText').textContent = msg;
+                document.getElementById('appModalIcon').textContent = icon;
+                document.getElementById('appModalCancelBtn').style.display = 'none';
+                
+                const confirmBtn = document.getElementById('appModalConfirmBtn');
+                confirmBtn.textContent = 'موافق';
+                confirmBtn.onclick = () => {
+                    document.getElementById('appModal').classList.remove('active');
+                };
+                
+                openModal('appModal');
+            }
+
+            function appConfirm(msg, onConfirm, title = 'تأكيد', icon = '❓') {
+                document.getElementById('appModalTitle').textContent = title;
+                document.getElementById('appModalText').textContent = msg;
+                document.getElementById('appModalIcon').textContent = icon;
+                
+                const cancelBtn = document.getElementById('appModalCancelBtn');
+                cancelBtn.style.display = 'flex';
+                cancelBtn.textContent = 'إلغاء';
+                cancelBtn.onclick = () => {
+                    document.getElementById('appModal').classList.remove('active');
+                };
+                
+                const confirmBtn = document.getElementById('appModalConfirmBtn');
+                confirmBtn.textContent = 'نعم، متأكد';
+                confirmBtn.onclick = () => {
+                    document.getElementById('appModal').classList.remove('active');
+                    if (onConfirm) onConfirm();
+                };
+                
+                openModal('appModal');
+            }
 
             // ══════════════════════════════════════
             //  INITIALIZATION
@@ -549,7 +602,7 @@
                     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(log));
                 },
 
-                addEntry(sessionName, p1, p2) {
+                addEntry(sessionName, p1, p2, t1Players, t2Players) {
                     const log = this.load();
                     const now = new Date();
                     log.unshift({
@@ -557,6 +610,8 @@
                         sessionName: sessionName,
                         player1: p1,
                         player2: p2,
+                        team1Players: t1Players || [p1],
+                        team2Players: t2Players || [p2],
                         timestamp: now.toISOString(),
                         date: now.toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' }),
                         time: now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
@@ -608,10 +663,65 @@
                                     <span>🕐 ${e.time}</span>
                                 </div>
                             </div>
+                            <button class="log-resume-btn" onclick="resumeSessionFromLog(${e.id})" title="إعادة تعبئة البيانات بهذه الجلسة">
+                                <i data-lucide="refresh-cw"></i> استكمال
+                            </button>
                         </div>
                     `).join('');
+                    
+                    // Re-init icons for the newly added buttons
+                    setTimeout(() => lucide.createIcons(), 50);
                 }
             };
+
+            function resumeSessionFromLog(id) {
+                const log = PlayersLog.load();
+                const entry = log.find(e => e.id === id);
+                if (!entry) return;
+
+                document.getElementById('sessionName').value = entry.sessionName || '';
+                document.getElementById('team1Name').value = entry.player1 || '';
+                document.getElementById('team2Name').value = entry.player2 || '';
+
+                // Restore Team 1 Players
+                const t1List = document.getElementById('team1Players');
+                t1List.innerHTML = '';
+                const p1Arr = entry.team1Players && entry.team1Players.length > 0 ? entry.team1Players : [entry.player1];
+                p1Arr.forEach((pName, idx) => {
+                    const count = idx + 1;
+                    const row = document.createElement('div');
+                    row.className = 'player-input-row';
+                    row.innerHTML = `
+                        <input class="setup-input" type="text" placeholder="اسم اللاعب ${count}" maxlength="20" value="${pName}">
+                        <button class="remove-player-btn" onclick="removePlayer(this)" style="display: flex;">✕</button>
+                    `;
+                    t1List.appendChild(row);
+                });
+                if (t1List.querySelectorAll('.player-input-row').length === 1) {
+                    t1List.querySelector('.remove-player-btn').style.display = 'none';
+                }
+
+                // Restore Team 2 Players
+                const t2List = document.getElementById('team2Players');
+                t2List.innerHTML = '';
+                const p2Arr = entry.team2Players && entry.team2Players.length > 0 ? entry.team2Players : [entry.player2];
+                p2Arr.forEach((pName, idx) => {
+                    const count = idx + 1;
+                    const row = document.createElement('div');
+                    row.className = 'player-input-row';
+                    row.innerHTML = `
+                        <input class="setup-input" type="text" placeholder="اسم اللاعب ${count}" maxlength="20" value="${pName}">
+                        <button class="remove-player-btn" onclick="removePlayer(this)" style="display: flex;">✕</button>
+                    `;
+                    t2List.appendChild(row);
+                });
+                if (t2List.querySelectorAll('.player-input-row').length === 1) {
+                    t2List.querySelector('.remove-player-btn').style.display = 'none';
+                }
+
+                // Close Modal
+                document.getElementById('playersLogModal').classList.remove('active');
+            }
 
             function openPlayersLog() {
                 PlayersLog.renderModal();
@@ -679,7 +789,7 @@
                     return;
                 }
                 if (team1Players.length === 0 || team2Players.length === 0) {
-                    alert('عذراً، كل فريق يحتاج لاعب واحد على الأقل!');
+                    appAlert('عذراً، كل فريق يحتاج لاعب واحد على الأقل!', 'بيانات ناقصة', '⚠️');
                     return;
                 }
 
@@ -695,8 +805,8 @@
                 G.startingBidder = 0;
                 G.usedQuestions.clear();
 
-                // سجل الجلسة (نحفظ أسماء الفرق)
-                PlayersLog.addEntry(sessionName, team1Name, team2Name);
+                // سجل الجلسة (نحفظ أسماء الفرق واللاعبين)
+                PlayersLog.addEntry(sessionName, team1Name, team2Name, team1Players, team2Players);
 
                 document.getElementById('setupScreen').style.display = 'none';
                 document.getElementById('gameBoard').style.display = 'flex';
@@ -706,10 +816,10 @@
                 lucide.createIcons();
             }
 
-            function loadQuestion() {
+            function loadQuestion(keepPlayers = false) {
                 try {
                     if (!window.gameQuestions || window.gameQuestions.length === 0) {
-                        alert("❌ ما تم تحميل الأسئلة. تأكد من ملف questions.js");
+                        appAlert("❌ ما تم تحميل الأسئلة. تأكد من ملف questions.js", 'خطأ في التحميل', '⚠️');
                         return;
                     }
 
@@ -732,25 +842,29 @@
                     G.phase = 'bidding';
                     G.currentBidder = G.startingBidder;
 
-                    // ✨ سحب لاعب من قائمة الانتظار لكل فريق (دورة كاملة قبل التكرار)
-                    if (!G.teamQueues) G.teamQueues = [[], []]; // Fallback for old saves
-                    if (G.teamQueues[0].length === 0) {
-                        G.teamQueues[0] = shuffleArray(G.teams[0].players);
-                    }
-                    if (G.teamQueues[1].length === 0) {
-                        G.teamQueues[1] = shuffleArray(G.teams[1].players);
-                    }
+                    if (!keepPlayers) {
+                        // ✨ سحب لاعب من قائمة الانتظار لكل فريق (دورة كاملة قبل التكرار)
+                        if (!G.teamQueues) G.teamQueues = [[], []]; // Fallback for old saves
+                        if (G.teamQueues[0].length === 0) {
+                            G.teamQueues[0] = shuffleArray(G.teams[0].players);
+                        }
+                        if (G.teamQueues[1].length === 0) {
+                            G.teamQueues[1] = shuffleArray(G.teams[1].players);
+                        }
 
-                    G.roundPlayers[0] = G.teamQueues[0].shift();
-                    G.roundPlayers[1] = G.teamQueues[1].shift();
+                        G.roundPlayers[0] = G.teamQueues[0].shift();
+                        G.roundPlayers[1] = G.teamQueues[1].shift();
+                    }
 
                     // UI Updates
                     document.getElementById('categoryName').textContent = q.category;
                     document.getElementById('questionText').textContent = q.question;
                     document.getElementById('skipQuestionBtn').style.display = 'flex';
 
-                    // عرض بانر اللاعبين المختارين
-                    showRoundPlayersBanner();
+                    // عرض بانر اللاعبين المختارين فقط إذا تغيروا
+                    if (!keepPlayers) {
+                        showRoundPlayersBanner();
+                    }
 
                     resetTimer();
                     updateUI();
@@ -1043,17 +1157,17 @@
             }
 
             function skipQuestion() {
-                if (confirm("تبي تتخطى السؤال؟")) {
-                    loadQuestion();
-                }
+                appConfirm("تبي تتخطى السؤال؟ (سيتم تغيير السؤال بنفس اللاعبين)", () => {
+                    loadQuestion(true);
+                }, "تخطي السؤال", "⏭️");
             }
 
             function confirmReset() {
-                if (confirm("متأكد إنك تبي تصفر النقاط وتبدأ من جديد؟")) {
+                appConfirm("متأكد إنك تبي تصفر النقاط وتبدأ من جديد؟", () => {
                     G.scores = [0, 0];
                     localStorage.removeItem('thirtySecChallenge_state');
                     location.reload();
-                }
+                }, "إعادة ضبط", "🔄");
             }
 
             function showResult(emoji, title, desc) {
